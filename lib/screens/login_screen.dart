@@ -1,0 +1,254 @@
+import 'package:flutter/material.dart';
+
+import '../theme/app_colors.dart';
+
+// Pantalla de inicio de sesión.
+// Por ahora solo valida los datos en el teléfono.
+// Más adelante, _submitLogin enviará estos datos al backend.
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Libera los controladores cuando esta pantalla deja de existir.
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Ingrese su correo';
+    }
+
+    if (!value.contains('@')) {
+      return 'Ingrese un correo válido';
+    }
+
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.length < 6) {
+      return 'La contraseña debe contener al menos 6 caracteres.';
+    }
+
+    return null;
+  }
+
+  void _submitLogin() {
+    // Si algún campo no pasa su validador, se muestran los mensajes de error.
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Inicio de sesión listo para conectar al backend.'),
+      ),
+    );
+  }
+
+  InputDecoration _fieldDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(color: Colors.grey[500]),
+      filled: true,
+      fillColor: AppColors.surface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: AppColors.indigo[700]!, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.redAccent),
+      ),
+    );
+  }
+
+  Widget _label(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        color: Colors.grey[700],
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  IconButton(
+                    alignment: Alignment.centerLeft,
+                    icon: Icon(Icons.arrow_back, color: Colors.grey[850]),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  Text(
+                    'Iniciar sesión',
+                    style: TextStyle(
+                      color: Colors.grey[850],
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  _label('Correo electrónico'),
+                  const SizedBox(height: 6),
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: _fieldDecoration('ejemplo@correo.com'),
+                    validator: _validateEmail,
+                  ),
+                  const SizedBox(height: 16),
+                  _label('Contraseña'),
+                  const SizedBox(height: 6),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: _fieldDecoration('Mínimo 6 caracteres'),
+                    validator: _validatePassword,
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Próximamente: recuperar contraseña.',
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text('¿Olvidaste tu contraseña?'),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 52,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.indigo[400],
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: _submitLogin,
+                      child: const Text('Iniciar sesión'),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: Colors.grey[400])),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          'o',
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                      Expanded(child: Divider(color: Colors.grey[400])),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    height: 52,
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.g_mobiledata, size: 28),
+                      label: const Text('Continuar con Google'),
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.grey[850],
+                        side: BorderSide(color: Colors.grey[700]!, width: 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Próximamente: acceso con Google.'),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Próximamente: crear cuenta.'),
+                        ),
+                      );
+                    },
+                    child: RichText(
+                      text: TextSpan(
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                        children: [
+                          const TextSpan(text: '¿No tenés cuenta? '),
+                          TextSpan(
+                            text: 'Registrate',
+                            style: TextStyle(
+                              color: AppColors.indigo[700],
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

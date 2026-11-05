@@ -2,10 +2,13 @@ import 'package:club_gonzalo_gil/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('muestra la pantalla de bienvenida', (tester) async {
+  testWidgets('navega desde bienvenida al login', (tester) async {
     await tester.pumpWidget(const ClubGonzaloGilApp());
 
-    expect(find.text('CLUB DEPORTIVO'), findsOneWidget);
-    expect(find.text('Comenzar'), findsOneWidget);
+    await tester.tap(find.text('Comenzar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Correo electrónico'), findsOneWidget);
+    expect(find.text('Contraseña'), findsOneWidget);
   });
 }

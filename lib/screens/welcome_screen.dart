@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import 'login_screen.dart';
 
-// Pantalla que aparece al abrir la app.
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -24,10 +24,7 @@ class WelcomeScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.indigo[400],
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: Colors.grey[700]!,
-                        width: 1,
-                      ),
+                      border: Border.all(color: Colors.grey[700]!, width: 1),
                       boxShadow: [
                         BoxShadow(
                           color: AppColors.indigo.withValues(alpha: 0.35),
@@ -70,16 +67,10 @@ class WelcomeScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
                   ),
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Próximamente: inicio de sesión'),
-                      ),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
                     );
                   },
                   child: const Text('Comenzar'),
