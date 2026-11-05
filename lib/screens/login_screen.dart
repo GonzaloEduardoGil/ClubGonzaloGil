@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import 'register_screen.dart';
 
 // Pantalla de inicio de sesión.
 // Por ahora solo valida los datos en el teléfono.
@@ -221,12 +222,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Próximamente: crear cuenta.'),
-                        ),
-                      );
-                    },
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const RegisterScreen(),
+                          ),
+                          );
+                          },
                     child: RichText(
                       text: TextSpan(
                         style: TextStyle(color: Colors.grey[600], fontSize: 14),
