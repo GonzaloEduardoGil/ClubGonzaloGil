@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
 // Pantalla de inicio de sesión.
 // Por ahora solo valida los datos en el teléfono.
@@ -145,11 +146,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Próximamente: recuperar contraseña.',
-                            ),
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ForgotPasswordScreen(),
                           ),
                         );
                       },
@@ -225,9 +224,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => const RegisterScreen(),
-                          ),
-                          );
-                          },
+                        ),
+                      );
+                    },
                     child: RichText(
                       text: TextSpan(
                         style: TextStyle(color: Colors.grey[600], fontSize: 14),
