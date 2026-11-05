@@ -5,10 +5,7 @@ void main() {
   testWidgets('muestra la pantalla de bienvenida', (tester) async {
     await tester.pumpWidget(const ClubGonzaloGilApp());
 
-    expect(find.text('Club Gonzalo Gil'), findsOneWidget);
-    expect(
-      find.text('Reservá tu espacio deportivo de forma simple y rápida.'),
-      findsOneWidget,
-    );
+    expect(find.text('CLUB DEPORTIVO'), findsOneWidget);
+    expect(find.text('Comenzar'), findsOneWidget);
   });
 }
