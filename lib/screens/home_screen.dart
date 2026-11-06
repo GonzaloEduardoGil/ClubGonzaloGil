@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import 'sedes_screen.dart';
 import '../models/user_profile.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -38,10 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: 'Reservas',
         message: 'Próximamente: tus reservas e historial.',
       ),
-      const _PlaceholderTab(
-        title: 'Perfil',
-        message: 'Próximamente: datos de tu perfil.',
-      ),
+      ProfileScreen(usuario: widget.usuario),
     ];
 
     return Scaffold(

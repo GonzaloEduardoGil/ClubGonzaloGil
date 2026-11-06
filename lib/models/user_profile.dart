@@ -4,6 +4,7 @@ class UserProfile {
     required this.nombre,
     required this.apellido,
     required this.email,
+    required this.fechaNacimiento,
     required this.dni,
   });
 
@@ -11,6 +12,7 @@ class UserProfile {
   final String nombre;
   final String apellido;
   final String email;
+  final String fechaNacimiento;
   final String dni;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -19,6 +21,7 @@ class UserProfile {
       nombre: json['nombre'] as String,
       apellido: json['apellido'] as String,
       email: json['email'] as String,
+      fechaNacimiento: json['fecha_nacimiento'] as String,
       dni: json['dni'] as String,
     );
   }
