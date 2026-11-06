@@ -1,15 +1,21 @@
+from .routers.sedes import router as sedes_router
+from .seed import cargar_datos_iniciales
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from . import models
-from .db import Base, engine
+from .db import Base, SessionLocal, engine
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Crea las tablas definidas en models.py si todavía no existen.
     Base.metadata.create_all(bind=engine)
+
+    with SessionLocal() as db:
+        cargar_datos_iniciales(db)
+
     yield
 
 
@@ -20,7 +26,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-
+app.include_router(sedes_router)
 @app.get("/health")
 def health_check():
     return {"status": "ok", "message": "API de Club Gonzalo Gil funcionando"}
