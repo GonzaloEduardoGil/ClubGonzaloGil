@@ -56,3 +56,19 @@ def crear_o_consultar_perfil(
     db.refresh(usuario)
 
     return usuario
+@router.get("/me", response_model=UserResponse)
+def obtener_mi_perfil(
+    firebase_uid: str = Depends(get_firebase_uid),
+    db: Session = Depends(get_db),
+):
+    usuario = db.scalar(
+        select(User).where(User.firebase_uid == firebase_uid),
+    )
+
+    if usuario is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Perfil no encontrado.",
+        )
+
+    return usuario

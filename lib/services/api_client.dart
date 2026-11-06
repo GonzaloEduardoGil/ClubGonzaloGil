@@ -6,6 +6,8 @@ import '../models/sede.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../models/user_profile.dart';
+
 class ApiClient {
   static Future<void> crearPerfil({
   required String nombre,
@@ -81,5 +83,27 @@ class ApiClient {
   final datos = jsonDecode(response.body) as Map<String, dynamic>;
 
   return Sede.fromJson(datos);
+}
+static Future<UserProfile> obtenerMiPerfil() async {
+  final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+
+  if (token == null) {
+    throw Exception('No hay un usuario autenticado.');
+  }
+
+  final response = await http.get(
+    Uri.parse('$_baseUrl/users/me'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('No se pudo cargar el perfil.');
+  }
+
+  final datos = jsonDecode(response.body) as Map<String, dynamic>;
+
+  return UserProfile.fromJson(datos);
 }
 }

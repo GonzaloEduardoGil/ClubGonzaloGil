@@ -5,6 +5,7 @@ import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 import 'home_screen.dart';
 import '../services/auth_service.dart';
+import '../services/api_client.dart';
 
 // Pantalla de inicio de sesión.
 // Por ahora solo valida los datos en el teléfono.
@@ -76,12 +77,25 @@ class _LoginScreenState extends State<LoginScreen> {
     return;
   }
 
+  try {
+  final perfil = await ApiClient.obtenerMiPerfil();
+
+  if (!mounted) return;
+
   Navigator.of(context).pushAndRemoveUntil(
     MaterialPageRoute(
-      builder: (_) => const HomeScreen(),
+      builder: (_) => HomeScreen(usuario: perfil),
     ),
     (route) => false,
   );
+} catch (_) {
+  if (!mounted) return;
+
+  setState(() {
+    _isLoading = false;
+    _errorMessage = 'No se pudo cargar tu perfil.';
+  });
+}
 }
 
   InputDecoration _fieldDecoration(String hint) {
@@ -261,13 +275,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   TextButton(
                     key: const Key('go-to-register'),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterScreen(),
+                    onPressed: _isLoading 
+                    ? null
+                    : () async {final accountCreated = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(
+                        builder: (_) => const RegisterScreen(),
                         ),
-                      );
-                    },
+                        );
+                        
+                        if (!mounted || accountCreated != true) return;
+                        
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Cuenta creada correctamente. Ahora iniciá sesión.',
+                              ),
+                              ),
+                              );
+                              },
                     child: RichText(
                       text: TextSpan(
                         style: TextStyle(color: Colors.grey[600], fontSize: 14),

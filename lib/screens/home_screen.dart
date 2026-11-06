@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import 'sedes_screen.dart';
+import '../models/user_profile.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({
+    super.key,
+    required this.usuario,
+  });
+
+  final UserProfile usuario;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -22,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      const _HomeContent(),
+      _HomeContent(nombre: widget.usuario.nombre),
       const SedesScreen(),
       const _PlaceholderTab(
         title: 'Canchas',
@@ -77,7 +83,11 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _HomeContent extends StatelessWidget {
-  const _HomeContent();
+  const _HomeContent({
+    required this.nombre,
+  });
+
+  final String nombre;
 
   @override
   Widget build(BuildContext context) {
@@ -97,12 +107,12 @@ class _HomeContent extends StatelessWidget {
                   bottomRight: Radius.circular(28),
                 ),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    'Hola, Gonzalo',
+                    'Hola, $nombre',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
