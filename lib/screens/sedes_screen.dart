@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/demo_sedes.dart';
 import '../models/sede.dart';
 import '../theme/app_colors.dart';
+import 'sede_detail_screen.dart';
 
 class SedesScreen extends StatelessWidget {
   const SedesScreen({super.key});
@@ -53,9 +54,9 @@ class _SedeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        ScaffoldMessenger.of(
+        Navigator.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Próximamente: ${sede.nombre}')));
+        ).push(MaterialPageRoute(builder: (_) => SedeDetailScreen(sede: sede)));
       },
       child: Container(
         width: double.infinity,
