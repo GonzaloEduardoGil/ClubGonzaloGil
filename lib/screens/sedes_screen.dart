@@ -1,12 +1,31 @@
 import 'package:flutter/material.dart';
 
-import '../data/demo_sedes.dart';
 import '../models/sede.dart';
+import '../services/api_client.dart';
 import '../theme/app_colors.dart';
 import 'sede_detail_screen.dart';
 
-class SedesScreen extends StatelessWidget {
+class SedesScreen extends StatefulWidget {
   const SedesScreen({super.key});
+
+  @override
+  State<SedesScreen> createState() => _SedesScreenState();
+}
+
+class _SedesScreenState extends State<SedesScreen> {
+  late Future<List<Sede>> _sedesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _sedesFuture = ApiClient.obtenerSedes();
+  }
+
+  void _reintentar() {
+    setState(() {
+      _sedesFuture = ApiClient.obtenerSedes();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +50,39 @@ class SedesScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: ListView.builder(
-                itemCount: sedesDemo.length,
-                itemBuilder: (context, index) {
-                  return _SedeCard(sede: sedesDemo[index]);
+              child: FutureBuilder<List<Sede>>(
+                future: _sedesFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            'No se pudieron cargar las sedes.',
+                          ),
+                          const SizedBox(height: 12),
+                          OutlinedButton(
+                            onPressed: _reintentar,
+                            child: const Text('Reintentar'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  final sedes = snapshot.data ?? [];
+
+                  return ListView.builder(
+                    itemCount: sedes.length,
+                    itemBuilder: (context, index) {
+                      return _SedeCard(sede: sedes[index]);
+                    },
+                  );
                 },
               ),
             ),
@@ -54,9 +102,11 @@ class _SedeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => SedeDetailScreen(sede: sede)));
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => SedeDetailScreen(sede: sede),
+          ),
+        );
       },
       child: Container(
         width: double.infinity,
