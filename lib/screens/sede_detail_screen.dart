@@ -4,6 +4,7 @@ import '../data/demo_canchas.dart';
 import '../models/cancha.dart';
 import '../models/sede.dart';
 import '../theme/app_colors.dart';
+import 'booking_screen.dart';
 
 class SedeDetailScreen extends StatefulWidget {
   const SedeDetailScreen({super.key, required this.sede});
@@ -117,7 +118,7 @@ class _SedeDetailScreenState extends State<SedeDetailScreen> {
                   ),
                   const SizedBox(height: 20),
                   for (final cancha in canchasFiltradas)
-                    _CanchaCard(cancha: cancha),
+                    _CanchaCard(cancha: cancha, sede: widget.sede),
                 ],
               ),
             ),
@@ -129,10 +130,10 @@ class _SedeDetailScreenState extends State<SedeDetailScreen> {
 }
 
 class _CanchaCard extends StatelessWidget {
-  const _CanchaCard({required this.cancha});
+  const _CanchaCard({required this.cancha, required this.sede});
 
   final Cancha cancha;
-
+  final Sede sede;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -181,9 +182,9 @@ class _CanchaCard extends StatelessWidget {
                   foregroundColor: Colors.black,
                 ),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Próximamente: reservar ${cancha.nombre}'),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => BookingScreen(cancha: cancha, sede: sede),
                     ),
                   );
                 },
