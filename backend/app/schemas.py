@@ -2,6 +2,8 @@ from datetime import time
 
 from pydantic import BaseModel
 
+from datetime import date
+
 
 class CanchaResponse(BaseModel):
     id: int
@@ -22,3 +24,19 @@ class SedeListResponse(BaseModel):
 
 class SedeDetailResponse(SedeListResponse):
     canchas: list[CanchaResponse]
+
+class UserCreate(BaseModel):
+    nombre: str
+    apellido: str
+    email: str
+    fecha_nacimiento: date
+    dni: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    nombre: str
+    apellido: str
+    email: str
+    fecha_nacimiento: date
+    dni: str

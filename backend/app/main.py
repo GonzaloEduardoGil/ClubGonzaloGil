@@ -7,10 +7,13 @@ from fastapi import FastAPI
 
 from . import models
 from .db import Base, SessionLocal, engine
+from .firebase import initialize_firebase
+from .routers.users import router as users_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    initialize_firebase()
     Base.metadata.create_all(bind=engine)
 
     with SessionLocal() as db:
@@ -30,3 +33,5 @@ app.include_router(sedes_router)
 @app.get("/health")
 def health_check():
     return {"status": "ok", "message": "API de Club Gonzalo Gil funcionando"}
+app.include_router(sedes_router)
+app.include_router(users_router)
