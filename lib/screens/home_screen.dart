@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import 'sedes_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,10 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final pages = [
       const _HomeContent(),
-      const _PlaceholderTab(
-        title: 'Sedes',
-        message: 'Próximamente: listado de sedes.',
-      ),
+      const SedesScreen(),
       const _PlaceholderTab(
         title: 'Canchas',
         message: 'Próximamente: listado de canchas.',
