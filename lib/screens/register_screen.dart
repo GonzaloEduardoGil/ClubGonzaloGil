@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import '../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -19,6 +20,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   final _birthDateController = TextEditingController();
   final _dniController = TextEditingController();
+
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -117,15 +121,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
-  void _register() {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _register() async {
+  if (!_formKey.currentState!.validate()) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Formulario validado. Próximamente se creará la cuenta.'),
-      ),
-    );
+  setState(() {
+    _isLoading = true;
+    _errorMessage = null;
+  });
+
+  final error = await AuthService.registrar(
+    email: _emailController.text.trim(),
+    password: _passwordController.text,
+  );
+
+  if (!mounted) return;
+
+  if (error != null) {
+    setState(() {
+      _isLoading = false;
+      _errorMessage = error;
+    });
+
+    return;
   }
+
+  Navigator.of(context).pop(true);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -241,6 +262,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     validator: _dniValidator,
                   ),
                   const SizedBox(height: 24),
+                  if (_errorMessage != null) ...[
+                    Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.redAccent),
+                      textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      ],
                   SizedBox(
                     height: 52,
                     child: FilledButton(

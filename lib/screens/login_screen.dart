@@ -4,6 +4,7 @@ import '../theme/app_colors.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 import 'home_screen.dart';
+import '../services/auth_service.dart';
 
 // Pantalla de inicio de sesión.
 // Por ahora solo valida los datos en el teléfono.
@@ -20,6 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -49,17 +52,37 @@ class _LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
-  void _submitLogin() {
-    // Si algún campo no pasa su validador, se muestran los mensajes de error.
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+  Future<void> _submitLogin() async {
+  if (!_formKey.currentState!.validate()) return;
 
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
-      (route) => false,
-    );
+  setState(() {
+    _isLoading = true;
+    _errorMessage = null;
+  });
+
+  final error = await AuthService.iniciarSesion(
+    email: _emailController.text.trim(),
+    password: _passwordController.text,
+  );
+
+  if (!mounted) return;
+
+  if (error != null) {
+    setState(() {
+      _isLoading = false;
+      _errorMessage = error;
+    });
+
+    return;
   }
+
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(
+      builder: (_) => const HomeScreen(),
+    ),
+    (route) => false,
+  );
+}
 
   InputDecoration _fieldDecoration(String hint) {
     return InputDecoration(
@@ -156,6 +179,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  if (_errorMessage != null) ...[
+                    Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.redAccent),
+                      textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      ],
                   SizedBox(
                     height: 52,
                     child: FilledButton(
@@ -170,8 +201,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onPressed: _submitLogin,
-                      child: const Text('Iniciar sesión'),
+                      onPressed: _isLoading ? null : _submitLogin,
+                      child: _isLoading
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.black,
+                          ),
+                          )
+                          : const Text('Iniciar sesión'),
                     ),
                   ),
                   const SizedBox(height: 20),
