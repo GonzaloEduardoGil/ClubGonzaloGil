@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/welcome_screen.dart';
+import 'screens/auth_gate.dart';
 import 'theme/app_colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -28,7 +28,7 @@ class ClubGonzaloGilApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const WelcomeScreen(),
+      home: const AuthGate(),
     );
   }
 }
