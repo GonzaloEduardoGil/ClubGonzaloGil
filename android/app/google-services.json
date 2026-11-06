@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1032729756621",
+    "project_id": "club-gonzalo-gil",
+    "storage_bucket": "club-gonzalo-gil.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032729756621:android:c2daf5233c03012886fa84",
+        "android_client_info": {
+          "package_name": "com.gonzaloeduardogil.club_gonzalo_gil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD42qBZSdUj6X216RZgdVaYeF59aTpGFgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
