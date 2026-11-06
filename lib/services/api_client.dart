@@ -26,4 +26,17 @@ class ApiClient {
         .map((dato) => Sede.fromJson(dato as Map<String, dynamic>))
         .toList();
   }
+  static Future<Sede> obtenerSede(int sedeId) async {
+  final response = await http.get(
+    Uri.parse('$_baseUrl/sedes/$sedeId'),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('No se pudo obtener la sede.');
+  }
+
+  final datos = jsonDecode(response.body) as Map<String, dynamic>;
+
+  return Sede.fromJson(datos);
+}
 }

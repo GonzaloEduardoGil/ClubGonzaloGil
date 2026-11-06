@@ -1,3 +1,5 @@
+import 'cancha.dart';
+
 class Sede {
   const Sede({
     required this.id,
@@ -6,6 +8,7 @@ class Sede {
     required this.horaApertura,
     required this.horaCierre,
     required this.deportes,
+    this.canchas = const [],
   });
 
   final int id;
@@ -14,8 +17,11 @@ class Sede {
   final String horaApertura;
   final String horaCierre;
   final List<String> deportes;
+  final List<Cancha> canchas;
 
   factory Sede.fromJson(Map<String, dynamic> json) {
+    final canchasJson = json['canchas'] as List<dynamic>? ?? [];
+
     return Sede(
       id: json['id'] as int,
       nombre: json['nombre'] as String,
@@ -25,12 +31,13 @@ class Sede {
       deportes: (json['deportes'] as List<dynamic>)
           .map((deporte) => deporte as String)
           .toList(),
+      canchas: canchasJson
+          .map((cancha) => Cancha.fromJson(cancha as Map<String, dynamic>))
+          .toList(),
     );
   }
 
   String get horario {
-    // PostgreSQL devuelve, por ejemplo, 08:00:00.
-    // Para la app mostramos solo 08:00.
     return '${horaApertura.substring(0, 5)} a '
         '${horaCierre.substring(0, 5)}';
   }

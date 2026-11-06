@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../data/demo_canchas.dart';
 import '../models/cancha.dart';
 import '../models/sede.dart';
+import '../services/api_client.dart';
 import '../theme/app_colors.dart';
 import 'booking_screen.dart';
 
@@ -16,22 +16,60 @@ class SedeDetailScreen extends StatefulWidget {
 }
 
 class _SedeDetailScreenState extends State<SedeDetailScreen> {
+  late Future<Sede> _sedeFuture;
   String _filtroSeleccionado = 'Todos';
 
   @override
-  Widget build(BuildContext context) {
-    final canchas = canchasPorSede[widget.sede.id] ?? [];
+  void initState() {
+    super.initState();
+    _sedeFuture = ApiClient.obtenerSede(widget.sede.id);
+  }
 
+  void _reintentar() {
+    setState(() {
+      _sedeFuture = ApiClient.obtenerSede(widget.sede.id);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Sede>(
+      future: _sedeFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Sede')),
+            body: Center(
+              child: OutlinedButton(
+                onPressed: _reintentar,
+                child: const Text('Reintentar'),
+              ),
+            ),
+          );
+        }
+
+        return _buildScreen(snapshot.data!);
+      },
+    );
+  }
+
+  Widget _buildScreen(Sede sede) {
     final deportes = [
       'Todos',
-      ...canchas.map((cancha) => cancha.deporte).toSet(),
+      ...sede.canchas.map((cancha) => cancha.deporte).toSet(),
     ];
 
     final canchasFiltradas = _filtroSeleccionado == 'Todos'
-        ? canchas
-        : canchas
-              .where((cancha) => cancha.deporte == _filtroSeleccionado)
-              .toList();
+        ? sede.canchas
+        : sede.canchas
+            .where((cancha) => cancha.deporte == _filtroSeleccionado)
+            .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -61,7 +99,7 @@ class _SedeDetailScreenState extends State<SedeDetailScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.sede.nombre.toUpperCase(),
+                    sede.nombre.toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 26,
@@ -70,11 +108,11 @@ class _SedeDetailScreenState extends State<SedeDetailScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    widget.sede.direccion,
+                    sede.direccion,
                     style: const TextStyle(color: Colors.black87),
                   ),
                   Text(
-                    'Abierto de ${widget.sede.horario}',
+                    'Abierto de ${sede.horario}',
                     style: const TextStyle(color: Colors.black87),
                   ),
                 ],
@@ -118,7 +156,10 @@ class _SedeDetailScreenState extends State<SedeDetailScreen> {
                   ),
                   const SizedBox(height: 20),
                   for (final cancha in canchasFiltradas)
-                    _CanchaCard(cancha: cancha, sede: widget.sede),
+                    _CanchaCard(
+                      cancha: cancha,
+                      sede: sede,
+                    ),
                 ],
               ),
             ),
@@ -130,10 +171,14 @@ class _SedeDetailScreenState extends State<SedeDetailScreen> {
 }
 
 class _CanchaCard extends StatelessWidget {
-  const _CanchaCard({required this.cancha, required this.sede});
+  const _CanchaCard({
+    required this.cancha,
+    required this.sede,
+  });
 
   final Cancha cancha;
   final Sede sede;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -184,7 +229,10 @@ class _CanchaCard extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => BookingScreen(cancha: cancha, sede: sede),
+                      builder: (_) => BookingScreen(
+                        cancha: cancha,
+                        sede: sede,
+                      ),
                     ),
                   );
                 },

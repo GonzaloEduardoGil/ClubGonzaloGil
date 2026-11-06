@@ -14,4 +14,16 @@ class Cancha {
   final String? tipo;
   final int precioPorHora;
   final List<String> caracteristicas;
+
+  factory Cancha.fromJson(Map<String, dynamic> json) {
+    return Cancha(
+      id: json['id'] as int,
+      nombre: json['nombre'] as String,
+      deporte: json['deporte'] as String,
+      tipo: json['tipo'] as String?,
+      precioPorHora: (json['precio_por_hora'] as num).round(),
+      // Esta columna la agregaremos más adelante a la base.
+      caracteristicas: const [],
+    );
+  }
 }
