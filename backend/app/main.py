@@ -9,6 +9,7 @@ from . import models
 from .db import Base, SessionLocal, engine
 from .firebase import initialize_firebase
 from .routers.users import router as users_router
+from .routers.reservas import router as reservas_router
 
 
 @asynccontextmanager
@@ -35,3 +36,4 @@ def health_check():
     return {"status": "ok", "message": "API de Club Gonzalo Gil funcionando"}
 app.include_router(sedes_router)
 app.include_router(users_router)
+app.include_router(reservas_router)

@@ -2,7 +2,7 @@ from datetime import time
 
 from pydantic import BaseModel
 
-from datetime import date
+from datetime import date, time
 
 
 class CanchaResponse(BaseModel):
@@ -40,3 +40,24 @@ class UserResponse(BaseModel):
     email: str
     fecha_nacimiento: date
     dni: str
+
+
+class SlotResponse(BaseModel):
+    hora: str
+    disponible: bool
+
+
+class ReservaCreate(BaseModel):
+    cancha_id: int
+    fecha: date
+    hora_inicio: time
+    hora_fin: time
+
+
+class ReservaResponse(BaseModel):
+    id: int
+    cancha_id: int
+    fecha: date
+    hora_inicio: time
+    hora_fin: time
+    estado: str
