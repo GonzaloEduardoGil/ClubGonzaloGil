@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'api_client.dart';
 
 class AuthService {
   AuthService._();
@@ -22,24 +23,38 @@ class AuthService {
   }
 
   static Future<String?> registrar({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+  required String nombre,
+  required String apellido,
+  required String email,
+  required String password,
+  required String fechaNacimiento,
+  required String dni,
+}) async {
+  try {
+    await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
 
-      // La consigna indica que, luego de registrarse,
-      // el usuario vuelve al inicio de sesión.
-      await _auth.signOut();
+    await ApiClient.crearPerfil(
+      nombre: nombre,
+      apellido: apellido,
+      email: email,
+      fechaNacimiento: fechaNacimiento,
+      dni: dni,
+    );
 
-      return null;
-    } on FirebaseAuthException catch (error) {
-      return _mensajeDeError(error);
-    }
+    await _auth.signOut();
+
+    return null;
+  } on FirebaseAuthException catch (error) {
+    return _mensajeDeError(error);
+  } catch (_) {
+    await _auth.signOut();
+
+    return 'La cuenta se creó, pero no se pudo guardar el perfil.';
   }
+}
 
   static String _mensajeDeError(FirebaseAuthException error) {
     switch (error.code) {

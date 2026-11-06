@@ -130,9 +130,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   });
 
   final error = await AuthService.registrar(
-    email: _emailController.text.trim(),
-    password: _passwordController.text,
-  );
+  nombre: _firstNameController.text.trim(),
+  apellido: _lastNameController.text.trim(),
+  email: _emailController.text.trim(),
+  password: _passwordController.text,
+  fechaNacimiento: _birthDateController.text,
+  dni: _dniController.text.trim(),
+);
 
   if (!mounted) return;
 
@@ -280,10 +284,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: _register,
-                      child: const Text('Registrarme'),
-                    ),
-                  ),
+                      onPressed: _isLoading ? null : _register,
+                      child: _isLoading
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.black,
+                          ),
+                          )
+                          : const Text('Registrarme'),
+                          ),
+                          ),
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
