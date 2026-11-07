@@ -99,7 +99,9 @@ Al crear una reserva, el backend envía una notificación push de confirmación.
 El archivo app/notifier.py revisa las reservas confirmadas cada minuto y envía recordatorios:
 - Aproximadamente 24 horas antes.
 - Aproximadamente una hora antes.
+
 Para evitar avisos duplicados, PostgreSQL guarda las fechas de envío en:
+
 - reminder_24h_sent_at
 - reminder_1h_sent_at
 
