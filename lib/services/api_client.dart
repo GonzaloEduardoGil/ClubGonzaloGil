@@ -10,6 +10,8 @@ import '../models/user_profile.dart';
 
 import '../models/slot.dart';
 
+import '../models/reserva.dart';
+
 class ApiClient {
   static Future<void> crearPerfil({
   required String nombre,
@@ -180,5 +182,59 @@ static String _fechaParaApi(DateTime fecha) {
   final dia = fecha.day.toString().padLeft(2, '0');
 
   return '${fecha.year}-$mes-$dia';
+}
+static Future<List<Reserva>> obtenerReservas() async {
+  final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+
+  if (token == null) {
+    throw Exception('No hay un usuario autenticado.');
+  }
+
+  final response = await http.get(
+    Uri.parse('$_baseUrl/reservas'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('No se pudieron cargar las reservas.');
+  }
+
+  final datos = jsonDecode(response.body) as List<dynamic>;
+
+  return datos
+      .map((dato) => Reserva.fromJson(dato as Map<String, dynamic>))
+      .toList();
+}
+
+static Future<void> cancelarReserva(int reservaId) async {
+  final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+
+  if (token == null) {
+    throw Exception('No hay un usuario autenticado.');
+  }
+
+  final response = await http.patch(
+    Uri.parse('$_baseUrl/reservas/$reservaId/cancelar'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return;
+  }
+
+  String mensaje = 'No se pudo cancelar la reserva.';
+
+  try {
+    final datos = jsonDecode(response.body) as Map<String, dynamic>;
+    mensaje = datos['detail'] as String? ?? mensaje;
+  } catch (_) {
+    // Conserva el mensaje general si el backend no devolvió JSON.
+  }
+
+  throw Exception(mensaje);
 }
 }

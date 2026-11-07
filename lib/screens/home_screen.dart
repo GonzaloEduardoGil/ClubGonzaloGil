@@ -4,6 +4,7 @@ import '../theme/app_colors.dart';
 import 'sedes_screen.dart';
 import '../models/user_profile.dart';
 import 'profile_screen.dart';
+import 'reservas_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -35,10 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: 'Canchas',
         message: 'Próximamente: listado de canchas.',
       ),
-      const _PlaceholderTab(
-        title: 'Reservas',
-        message: 'Próximamente: tus reservas e historial.',
-      ),
+      const ReservasScreen(),
       ProfileScreen(usuario: widget.usuario),
     ];
 
