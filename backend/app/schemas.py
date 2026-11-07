@@ -70,3 +70,9 @@ class ReservaDetalleResponse(BaseModel):
     hora_inicio: time
     hora_fin: time
     estado: str
+
+class UserUpdate(BaseModel):
+    nombre: str
+    apellido: str
+    fecha_nacimiento: date
+    dni: str
