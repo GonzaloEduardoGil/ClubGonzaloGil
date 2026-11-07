@@ -5,6 +5,7 @@ import 'sedes_screen.dart';
 import '../models/user_profile.dart';
 import 'profile_screen.dart';
 import 'reservas_screen.dart';
+import 'canchas_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -44,10 +45,7 @@ void _actualizarPerfil(UserProfile usuarioActualizado) {
     final pages = [
       _HomeContent(nombre: _usuario.nombre),
       const SedesScreen(),
-      const _PlaceholderTab(
-        title: 'Canchas',
-        message: 'Próximamente: listado de canchas.',
-      ),
+      const CanchasScreen(),
       const ReservasScreen(),
       ProfileScreen(
         usuario: _usuario,

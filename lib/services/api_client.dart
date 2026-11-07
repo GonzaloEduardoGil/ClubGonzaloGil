@@ -12,6 +12,8 @@ import '../models/slot.dart';
 
 import '../models/reserva.dart';
 
+import '../models/cancha_con_sede.dart';
+
 class ApiClient {
   static Future<void> crearPerfil({
   required String nombre,
@@ -277,5 +279,24 @@ static Future<UserProfile> actualizarMiPerfil({
   final datos = jsonDecode(response.body) as Map<String, dynamic>;
 
   return UserProfile.fromJson(datos);
+}
+static Future<List<CanchaConSede>> obtenerCanchas() async {
+  final response = await http.get(
+    Uri.parse('$_baseUrl/canchas'),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('No se pudieron cargar las canchas.');
+  }
+
+  final datos = jsonDecode(response.body) as List<dynamic>;
+
+  return datos
+      .map(
+        (dato) => CanchaConSede.fromJson(
+          dato as Map<String, dynamic>,
+        ),
+      )
+      .toList();
 }
 }
