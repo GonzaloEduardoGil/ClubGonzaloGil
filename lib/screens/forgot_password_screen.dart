@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
-import 'reset_password_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -14,13 +14,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
 
+  bool _enviando = false;
+  String? _error;
+
   @override
   void dispose() {
     _emailController.dispose();
     super.dispose();
   }
 
-  String? _validateEmail(String? value) {
+  String? _validarEmail(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Ingrese su correo';
     }
@@ -38,8 +41,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       hintStyle: TextStyle(color: Colors.grey[500]),
       filled: true,
       fillColor: AppColors.surface,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 14,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: Colors.grey[700]!),
@@ -51,12 +59,38 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  void _sendCode() {
+  Future<void> _enviarEnlace() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Más adelante, acá llamaremos al backend para enviar el email.
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => const ResetPasswordScreen()));
+    setState(() {
+      _enviando = true;
+      _error = null;
+    });
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: _emailController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Si existe una cuenta con ese correo, recibirás instrucciones.',
+          ),
+        ),
+      );
+
+      Navigator.of(context).pop();
+    } on FirebaseAuthException {
+      if (!mounted) return;
+
+      setState(() {
+        _enviando = false;
+        _error = 'No se pudo enviar el enlace. Intentá nuevamente.';
+      });
+    }
   }
 
   @override
@@ -75,7 +109,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   IconButton(
                     alignment: Alignment.centerLeft,
                     icon: Icon(Icons.arrow_back, color: Colors.grey[850]),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: _enviando
+                        ? null
+                        : () => Navigator.of(context).pop(),
                   ),
                   Text(
                     'Recuperar contraseña',
@@ -84,6 +120,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Te enviaremos un enlace seguro para restablecerla.',
+                    style: TextStyle(color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 28),
                   Text(
@@ -99,9 +140,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: _decoration(),
-                    validator: _validateEmail,
+                    validator: _validarEmail,
                   ),
                   const SizedBox(height: 24),
+                  if (_error != null) ...[
+                    Text(
+                      _error!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.redAccent),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   SizedBox(
                     height: 52,
                     child: FilledButton(
@@ -112,8 +161,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: _sendCode,
-                      child: const Text('Enviar código'),
+                      onPressed: _enviando ? null : _enviarEnlace,
+                      child: _enviando
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.black,
+                              ),
+                            )
+                          : const Text('Enviar enlace'),
                     ),
                   ),
                 ],
