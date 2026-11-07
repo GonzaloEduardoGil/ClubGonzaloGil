@@ -7,7 +7,12 @@ from sqlalchemy.orm import Session, joinedload
 from ..db import SessionLocal
 from ..deps import get_firebase_uid
 from ..models import Cancha, Reserva, User
-from ..schemas import ReservaCreate, ReservaResponse, SlotResponse
+from ..schemas import (
+    ReservaCreate,
+    ReservaDetalleResponse,
+    ReservaResponse,
+    SlotResponse,
+)
 
 router = APIRouter(tags=["Reservas"])
 
@@ -24,6 +29,16 @@ def get_db():
 def es_hora_completa(hora: time) -> bool:
     return hora.minute == 0 and hora.second == 0 and hora.microsecond == 0
 
+def convertir_reserva(reserva: Reserva) -> dict:
+    return {
+        "id": reserva.id,
+        "sede": reserva.cancha.sede.nombre,
+        "cancha": reserva.cancha.nombre,
+        "fecha": reserva.fecha,
+        "hora_inicio": reserva.hora_inicio,
+        "hora_fin": reserva.hora_fin,
+        "estado": reserva.estado,
+    }
 
 @router.get(
     "/canchas/{cancha_id}/disponibilidad",
@@ -176,3 +191,81 @@ def crear_reserva(
     db.refresh(reserva)
 
     return reserva
+@router.get(
+    "/reservas",
+    response_model=list[ReservaDetalleResponse],
+)
+def listar_mis_reservas(
+    firebase_uid: str = Depends(get_firebase_uid),
+    db: Session = Depends(get_db),
+):
+    usuario = db.scalar(
+        select(User).where(User.firebase_uid == firebase_uid),
+    )
+
+    if usuario is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Perfil de usuario no encontrado.",
+        )
+
+    reservas = db.scalars(
+        select(Reserva)
+        .where(Reserva.usuario_id == usuario.id)
+        .options(
+            joinedload(Reserva.cancha).joinedload(Cancha.sede),
+        )
+        .order_by(Reserva.fecha.desc(), Reserva.hora_inicio.desc()),
+    ).all()
+
+    return [convertir_reserva(reserva) for reserva in reservas]
+
+
+@router.patch(
+    "/reservas/{reserva_id}/cancelar",
+    response_model=ReservaDetalleResponse,
+)
+def cancelar_reserva(
+    reserva_id: int,
+    firebase_uid: str = Depends(get_firebase_uid),
+    db: Session = Depends(get_db),
+):
+    usuario = db.scalar(
+        select(User).where(User.firebase_uid == firebase_uid),
+    )
+
+    if usuario is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Perfil de usuario no encontrado.",
+        )
+
+    reserva = db.scalar(
+        select(Reserva)
+        .where(
+            Reserva.id == reserva_id,
+            Reserva.usuario_id == usuario.id,
+        )
+        .options(
+            joinedload(Reserva.cancha).joinedload(Cancha.sede),
+        ),
+    )
+
+    if reserva is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Reserva no encontrada.",
+        )
+
+    if reserva.estado == "cancelada":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La reserva ya fue cancelada.",
+        )
+
+    reserva.estado = "cancelada"
+
+    db.commit()
+    db.refresh(reserva)
+
+    return convertir_reserva(reserva)

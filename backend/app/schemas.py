@@ -61,3 +61,12 @@ class ReservaResponse(BaseModel):
     hora_inicio: time
     hora_fin: time
     estado: str
+
+class ReservaDetalleResponse(BaseModel):
+    id: int
+    sede: str
+    cancha: str
+    fecha: date
+    hora_inicio: time
+    hora_fin: time
+    estado: str
