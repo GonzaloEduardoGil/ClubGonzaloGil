@@ -2,15 +2,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../models/user_profile.dart';
+import 'edit_profile_screen.dart';
 import 'welcome_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({
     super.key,
     required this.usuario,
+    required this.onProfileUpdated,
   });
 
   final UserProfile usuario;
+  final ValueChanged<UserProfile> onProfileUpdated;
 
   String get _fechaFormateada {
     final partes = usuario.fechaNacimiento.split('-');
@@ -18,6 +21,18 @@ class ProfileScreen extends StatelessWidget {
     if (partes.length != 3) return usuario.fechaNacimiento;
 
     return '${partes[2]}/${partes[1]}/${partes[0]}';
+  }
+
+  Future<void> _editarPerfil(BuildContext context) async {
+    final actualizado = await Navigator.of(context).push<UserProfile>(
+      MaterialPageRoute(
+        builder: (_) => EditProfileScreen(usuario: usuario),
+      ),
+    );
+
+    if (actualizado != null) {
+      onProfileUpdated(actualizado);
+    }
   }
 
   Future<void> _cerrarSesion(BuildContext context) async {
@@ -65,12 +80,22 @@ class ProfileScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const Text(
-            'Perfil',
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              const Text(
+                'Perfil',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () => _editarPerfil(context),
+                icon: const Icon(Icons.edit),
+                tooltip: 'Editar perfil',
+              ),
+            ],
           ),
           const SizedBox(height: 24),
           const Center(

@@ -237,4 +237,45 @@ static Future<void> cancelarReserva(int reservaId) async {
 
   throw Exception(mensaje);
 }
+static Future<UserProfile> actualizarMiPerfil({
+  required String nombre,
+  required String apellido,
+  required String fechaNacimiento,
+  required String dni,
+}) async {
+  final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+
+  if (token == null) {
+    throw Exception('No hay un usuario autenticado.');
+  }
+
+  final partesFecha = fechaNacimiento.split('/');
+
+  if (partesFecha.length != 3) {
+    throw Exception('La fecha de nacimiento no es válida.');
+  }
+
+  final response = await http.patch(
+    Uri.parse('$_baseUrl/users/me'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode({
+      'nombre': nombre,
+      'apellido': apellido,
+      'fecha_nacimiento':
+          '${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}',
+      'dni': dni,
+    }),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('No se pudo actualizar el perfil.');
+  }
+
+  final datos = jsonDecode(response.body) as Map<String, dynamic>;
+
+  return UserProfile.fromJson(datos);
+}
 }

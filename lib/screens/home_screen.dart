@@ -19,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  
   int _selectedIndex = 0;
 
   void _goToTab(int index) {
@@ -26,18 +27,32 @@ class _HomeScreenState extends State<HomeScreen> {
       _selectedIndex = index;
     });
   }
+  late UserProfile _usuario;
 
   @override
+  void initState() {
+  super.initState();
+  _usuario = widget.usuario;
+}
+
+void _actualizarPerfil(UserProfile usuarioActualizado) {
+  setState(() {
+    _usuario = usuarioActualizado;
+  });
+  }
   Widget build(BuildContext context) {
     final pages = [
-      _HomeContent(nombre: widget.usuario.nombre),
+      _HomeContent(nombre: _usuario.nombre),
       const SedesScreen(),
       const _PlaceholderTab(
         title: 'Canchas',
         message: 'Próximamente: listado de canchas.',
       ),
       const ReservasScreen(),
-      ProfileScreen(usuario: widget.usuario),
+      ProfileScreen(
+        usuario: _usuario,
+        onProfileUpdated: _actualizarPerfil,
+        ),
     ];
 
     return Scaffold(
