@@ -68,8 +68,8 @@ class _SedeDetailScreenState extends State<SedeDetailScreen> {
     final canchasFiltradas = _filtroSeleccionado == 'Todos'
         ? sede.canchas
         : sede.canchas
-            .where((cancha) => cancha.deporte == _filtroSeleccionado)
-            .toList();
+              .where((cancha) => cancha.deporte == _filtroSeleccionado)
+              .toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -156,10 +156,7 @@ class _SedeDetailScreenState extends State<SedeDetailScreen> {
                   ),
                   const SizedBox(height: 20),
                   for (final cancha in canchasFiltradas)
-                    _CanchaCard(
-                      cancha: cancha,
-                      sede: sede,
-                    ),
+                    _CanchaCard(cancha: cancha, sede: sede),
                 ],
               ),
             ),
@@ -171,10 +168,7 @@ class _SedeDetailScreenState extends State<SedeDetailScreen> {
 }
 
 class _CanchaCard extends StatelessWidget {
-  const _CanchaCard({
-    required this.cancha,
-    required this.sede,
-  });
+  const _CanchaCard({required this.cancha, required this.sede});
 
   final Cancha cancha;
   final Sede sede;
@@ -229,10 +223,7 @@ class _CanchaCard extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => BookingScreen(
-                        cancha: cancha,
-                        sede: sede,
-                      ),
+                      builder: (_) => BookingScreen(cancha: cancha, sede: sede),
                     ),
                   );
                 },

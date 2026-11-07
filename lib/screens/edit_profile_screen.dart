@@ -5,10 +5,7 @@ import '../services/api_client.dart';
 import '../theme/app_colors.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({
-    super.key,
-    required this.usuario,
-  });
+  const EditProfileScreen({super.key, required this.usuario});
 
   final UserProfile usuario;
 
@@ -58,9 +55,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       hintText: hint,
       filled: true,
       fillColor: AppColors.surface,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: Colors.grey[700]!),

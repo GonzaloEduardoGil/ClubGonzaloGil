@@ -7,11 +7,7 @@ import '../services/api_client.dart';
 import '../theme/app_colors.dart';
 
 class BookingScreen extends StatefulWidget {
-  const BookingScreen({
-    super.key,
-    required this.cancha,
-    required this.sede,
-  });
+  const BookingScreen({super.key, required this.cancha, required this.sede});
 
   final Cancha cancha;
   final Sede sede;
@@ -139,9 +135,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
       Navigator.of(context).pop();
 
-      messenger.showSnackBar(
-        SnackBar(content: Text(mensaje)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(mensaje)));
     } catch (error) {
       if (!mounted) return;
 
@@ -184,10 +178,7 @@ class _BookingScreenState extends State<BookingScreen> {
             const SizedBox(height: 24),
             const Text(
               'Elegí una fecha',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 10),
             SizedBox(
@@ -238,10 +229,7 @@ class _BookingScreenState extends State<BookingScreen> {
             const SizedBox(height: 24),
             const Text(
               'Elegí horario',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 6),
             Text(
@@ -274,9 +262,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 }
 
                 final slots = snapshot.data ?? [];
-                final hayDisponibles = slots.any(
-                  (slot) => slot.disponible,
-                );
+                final hayDisponibles = slots.any((slot) => slot.disponible);
 
                 if (!hayDisponibles) {
                   return Text(
@@ -292,7 +278,8 @@ class _BookingScreenState extends State<BookingScreen> {
                     for (final slot in slots)
                       ChoiceChip(
                         label: Text(slot.hora),
-                        selected: _horaInicio != null &&
+                        selected:
+                            _horaInicio != null &&
                             _horaNumerica(slot) >= _horaInicio! &&
                             _horaNumerica(slot) < _horaFin!,
                         selectedColor: AppColors.indigo[400],
@@ -342,8 +329,8 @@ class _BookingScreenState extends State<BookingScreen> {
                         _horaInicio == null
                             ? 'Elegí un horario'
                             : 'Reservar '
-                                '${_formatearHora(_horaInicio!)} - '
-                                '${_formatearHora(_horaFin!)} · \$$total',
+                                  '${_formatearHora(_horaInicio!)} - '
+                                  '${_formatearHora(_horaFin!)} · \$$total',
                       ),
               ),
             ),

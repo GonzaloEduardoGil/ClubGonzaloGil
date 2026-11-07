@@ -8,10 +8,7 @@ import 'reservas_screen.dart';
 import 'canchas_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({
-    super.key,
-    required this.usuario,
-  });
+  const HomeScreen({super.key, required this.usuario});
 
   final UserProfile usuario;
 
@@ -20,7 +17,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  
   int _selectedIndex = 0;
 
   void _goToTab(int index) {
@@ -28,29 +24,28 @@ class _HomeScreenState extends State<HomeScreen> {
       _selectedIndex = index;
     });
   }
+
   late UserProfile _usuario;
 
   @override
   void initState() {
-  super.initState();
-  _usuario = widget.usuario;
-}
-
-void _actualizarPerfil(UserProfile usuarioActualizado) {
-  setState(() {
-    _usuario = usuarioActualizado;
-  });
+    super.initState();
+    _usuario = widget.usuario;
   }
+
+  void _actualizarPerfil(UserProfile usuarioActualizado) {
+    setState(() {
+      _usuario = usuarioActualizado;
+    });
+  }
+
   Widget build(BuildContext context) {
     final pages = [
       _HomeContent(nombre: _usuario.nombre),
       const SedesScreen(),
       const CanchasScreen(),
       const ReservasScreen(),
-      ProfileScreen(
-        usuario: _usuario,
-        onProfileUpdated: _actualizarPerfil,
-        ),
+      ProfileScreen(usuario: _usuario, onProfileUpdated: _actualizarPerfil),
     ];
 
     return Scaffold(
@@ -92,9 +87,7 @@ void _actualizarPerfil(UserProfile usuarioActualizado) {
 }
 
 class _HomeContent extends StatelessWidget {
-  const _HomeContent({
-    required this.nombre,
-  });
+  const _HomeContent({required this.nombre});
 
   final String nombre;
 

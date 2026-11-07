@@ -62,9 +62,7 @@ class _SedesScreenState extends State<SedesScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
-                            'No se pudieron cargar las sedes.',
-                          ),
+                          const Text('No se pudieron cargar las sedes.'),
                           const SizedBox(height: 12),
                           OutlinedButton(
                             onPressed: _reintentar,
@@ -102,11 +100,9 @@ class _SedeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => SedeDetailScreen(sede: sede),
-          ),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => SedeDetailScreen(sede: sede)));
       },
       child: Container(
         width: double.infinity,

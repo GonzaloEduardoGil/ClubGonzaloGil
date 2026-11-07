@@ -2,10 +2,7 @@ import 'cancha.dart';
 import 'sede.dart';
 
 class CanchaConSede {
-  const CanchaConSede({
-    required this.cancha,
-    required this.sede,
-  });
+  const CanchaConSede({required this.cancha, required this.sede});
 
   final Cancha cancha;
   final Sede sede;

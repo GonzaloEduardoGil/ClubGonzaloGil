@@ -33,9 +33,7 @@ class _ReservasScreenState extends State<ReservasScreen> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Cancelar reserva'),
-          content: Text(
-            '¿Querés cancelar la reserva de ${reserva.cancha}?',
-          ),
+          content: Text('¿Querés cancelar la reserva de ${reserva.cancha}?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -73,9 +71,7 @@ class _ReservasScreenState extends State<ReservasScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            error.toString().replaceFirst('Exception: ', ''),
-          ),
+          content: Text(error.toString().replaceFirst('Exception: ', '')),
         ),
       );
     }
@@ -139,9 +135,7 @@ class _ReservasScreenState extends State<ReservasScreen> {
                 future: _reservasFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   if (snapshot.hasError) {
@@ -194,10 +188,7 @@ class _ReservasScreenState extends State<ReservasScreen> {
 }
 
 class _ReservaCard extends StatelessWidget {
-  const _ReservaCard({
-    required this.reserva,
-    required this.onCancelar,
-  });
+  const _ReservaCard({required this.reserva, required this.onCancelar});
 
   final Reserva reserva;
   final VoidCallback? onCancelar;
@@ -238,9 +229,7 @@ class _ReservaCard extends StatelessWidget {
                   child: Text(
                     reserva.estado.toUpperCase(),
                     style: TextStyle(
-                      color: cancelada
-                          ? Colors.red.shade900
-                          : Colors.black,
+                      color: cancelada ? Colors.red.shade900 : Colors.black,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),

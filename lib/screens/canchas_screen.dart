@@ -55,9 +55,7 @@ class _CanchasScreenState extends State<CanchasScreen> {
                 future: _canchasFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   if (snapshot.hasError) {
@@ -81,12 +79,12 @@ class _CanchasScreenState extends State<CanchasScreen> {
                   final canchasFiltradas = _filtroSeleccionado == 'Todos'
                       ? canchas
                       : canchas
-                          .where(
-                            (canchaConSede) =>
-                                canchaConSede.cancha.deporte ==
-                                _filtroSeleccionado,
-                          )
-                          .toList();
+                            .where(
+                              (canchaConSede) =>
+                                  canchaConSede.cancha.deporte ==
+                                  _filtroSeleccionado,
+                            )
+                            .toList();
 
                   return ListView(
                     children: [
@@ -95,12 +93,10 @@ class _CanchasScreenState extends State<CanchasScreen> {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: deportes.length,
-                          separatorBuilder: (_, _) =>
-                              const SizedBox(width: 8),
+                          separatorBuilder: (_, _) => const SizedBox(width: 8),
                           itemBuilder: (context, index) {
                             final deporte = deportes[index];
-                            final seleccionado =
-                                deporte == _filtroSeleccionado;
+                            final seleccionado = deporte == _filtroSeleccionado;
 
                             return ChoiceChip(
                               label: Text(deporte),
@@ -114,9 +110,7 @@ class _CanchasScreenState extends State<CanchasScreen> {
                                     : Colors.grey[700],
                                 fontWeight: FontWeight.w600,
                               ),
-                              side: BorderSide(
-                                color: Colors.grey[700]!,
-                              ),
+                              side: BorderSide(color: Colors.grey[700]!),
                               onSelected: (_) {
                                 setState(() {
                                   _filtroSeleccionado = deporte;
@@ -142,9 +136,7 @@ class _CanchasScreenState extends State<CanchasScreen> {
 }
 
 class _CanchaCard extends StatelessWidget {
-  const _CanchaCard({
-    required this.canchaConSede,
-  });
+  const _CanchaCard({required this.canchaConSede});
 
   final CanchaConSede canchaConSede;
 
@@ -175,18 +167,12 @@ class _CanchaCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             '${sede.nombre} · ${sede.direccion}',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 13,
-            ),
+            style: TextStyle(color: Colors.grey[600], fontSize: 13),
           ),
           const SizedBox(height: 10),
           if (cancha.tipo != null)
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -221,10 +207,7 @@ class _CanchaCard extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => BookingScreen(
-                        cancha: cancha,
-                        sede: sede,
-                      ),
+                      builder: (_) => BookingScreen(cancha: cancha, sede: sede),
                     ),
                   );
                 },

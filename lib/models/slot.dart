@@ -1,8 +1,5 @@
 class Slot {
-  const Slot({
-    required this.hora,
-    required this.disponible,
-  });
+  const Slot({required this.hora, required this.disponible});
 
   final String hora;
   final bool disponible;

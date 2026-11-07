@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'screens/auth_gate.dart';
 import 'theme/app_colors.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {

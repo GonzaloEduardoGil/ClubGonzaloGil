@@ -122,35 +122,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _register() async {
-  if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
-  setState(() {
-    _isLoading = true;
-    _errorMessage = null;
-  });
-
-  final error = await AuthService.registrar(
-  nombre: _firstNameController.text.trim(),
-  apellido: _lastNameController.text.trim(),
-  email: _emailController.text.trim(),
-  password: _passwordController.text,
-  fechaNacimiento: _birthDateController.text,
-  dni: _dniController.text.trim(),
-);
-
-  if (!mounted) return;
-
-  if (error != null) {
     setState(() {
-      _isLoading = false;
-      _errorMessage = error;
+      _isLoading = true;
+      _errorMessage = null;
     });
 
-    return;
-  }
+    final error = await AuthService.registrar(
+      nombre: _firstNameController.text.trim(),
+      apellido: _lastNameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      fechaNacimiento: _birthDateController.text,
+      dni: _dniController.text.trim(),
+    );
 
-  Navigator.of(context).pop(true);
-}
+    if (!mounted) return;
+
+    if (error != null) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = error;
+      });
+
+      return;
+    }
+
+    Navigator.of(context).pop(true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -271,9 +271,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       _errorMessage!,
                       style: const TextStyle(color: Colors.redAccent),
                       textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 12),
-                      ],
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   SizedBox(
                     height: 52,
                     child: FilledButton(
@@ -286,17 +286,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       onPressed: _isLoading ? null : _register,
                       child: _isLoading
-                      ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.black,
-                          ),
-                          )
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.black,
+                              ),
+                            )
                           : const Text('Registrarme'),
-                          ),
-                          ),
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),

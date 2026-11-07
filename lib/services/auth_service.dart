@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'api_client.dart';
 
 class AuthService {
@@ -11,10 +12,7 @@ class AuthService {
     required String password,
   }) async {
     try {
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
 
       return null;
     } on FirebaseAuthException catch (error) {
@@ -23,38 +21,38 @@ class AuthService {
   }
 
   static Future<String?> registrar({
-  required String nombre,
-  required String apellido,
-  required String email,
-  required String password,
-  required String fechaNacimiento,
-  required String dni,
-}) async {
-  try {
-    await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+    required String nombre,
+    required String apellido,
+    required String email,
+    required String password,
+    required String fechaNacimiento,
+    required String dni,
+  }) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    await ApiClient.crearPerfil(
-      nombre: nombre,
-      apellido: apellido,
-      email: email,
-      fechaNacimiento: fechaNacimiento,
-      dni: dni,
-    );
+      await ApiClient.crearPerfil(
+        nombre: nombre,
+        apellido: apellido,
+        email: email,
+        fechaNacimiento: fechaNacimiento,
+        dni: dni,
+      );
 
-    await _auth.signOut();
+      await _auth.signOut();
 
-    return null;
-  } on FirebaseAuthException catch (error) {
-    return _mensajeDeError(error);
-  } catch (_) {
-    await _auth.signOut();
+      return null;
+    } on FirebaseAuthException catch (error) {
+      return _mensajeDeError(error);
+    } catch (_) {
+      await _auth.signOut();
 
-    return 'La cuenta se creó, pero no se pudo guardar el perfil.';
+      return 'La cuenta se creó, pero no se pudo guardar el perfil.';
+    }
   }
-}
 
   static String _mensajeDeError(FirebaseAuthException error) {
     switch (error.code) {

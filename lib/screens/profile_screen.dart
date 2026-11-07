@@ -25,9 +25,7 @@ class ProfileScreen extends StatelessWidget {
 
   Future<void> _editarPerfil(BuildContext context) async {
     final actualizado = await Navigator.of(context).push<UserProfile>(
-      MaterialPageRoute(
-        builder: (_) => EditProfileScreen(usuario: usuario),
-      ),
+      MaterialPageRoute(builder: (_) => EditProfileScreen(usuario: usuario)),
     );
 
     if (actualizado != null) {
@@ -67,9 +65,7 @@ class ProfileScreen extends StatelessWidget {
     if (!context.mounted) return;
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) => const WelcomeScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const WelcomeScreen()),
       (route) => false,
     );
   }
@@ -84,10 +80,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               const Text(
                 'Perfil',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
               IconButton(
@@ -108,10 +101,7 @@ class ProfileScreen extends StatelessWidget {
           Text(
             '${usuario.nombre} ${usuario.apellido}',
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 21,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 28),
           _ProfileData(

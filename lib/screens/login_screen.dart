@@ -54,49 +54,47 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submitLogin() async {
-  if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
-  setState(() {
-    _isLoading = true;
-    _errorMessage = null;
-  });
-
-  final error = await AuthService.iniciarSesion(
-    email: _emailController.text.trim(),
-    password: _passwordController.text,
-  );
-
-  if (!mounted) return;
-
-  if (error != null) {
     setState(() {
-      _isLoading = false;
-      _errorMessage = error;
+      _isLoading = true;
+      _errorMessage = null;
     });
 
-    return;
+    final error = await AuthService.iniciarSesion(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
+
+    if (!mounted) return;
+
+    if (error != null) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = error;
+      });
+
+      return;
+    }
+
+    try {
+      final perfil = await ApiClient.obtenerMiPerfil();
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => HomeScreen(usuario: perfil)),
+        (route) => false,
+      );
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'No se pudo cargar tu perfil.';
+      });
+    }
   }
-
-  try {
-  final perfil = await ApiClient.obtenerMiPerfil();
-
-  if (!mounted) return;
-
-  Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute(
-      builder: (_) => HomeScreen(usuario: perfil),
-    ),
-    (route) => false,
-  );
-} catch (_) {
-  if (!mounted) return;
-
-  setState(() {
-    _isLoading = false;
-    _errorMessage = 'No se pudo cargar tu perfil.';
-  });
-}
-}
 
   InputDecoration _fieldDecoration(String hint) {
     return InputDecoration(
@@ -198,9 +196,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       _errorMessage!,
                       style: const TextStyle(color: Colors.redAccent),
                       textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 12),
-                      ],
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   SizedBox(
                     height: 52,
                     child: FilledButton(
@@ -217,14 +215,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       onPressed: _isLoading ? null : _submitLogin,
                       child: _isLoading
-                      ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.black,
-                          ),
-                          )
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.black,
+                              ),
+                            )
                           : const Text('Iniciar sesión'),
                     ),
                   ),
@@ -275,24 +273,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   TextButton(
                     key: const Key('go-to-register'),
-                    onPressed: _isLoading 
-                    ? null
-                    : () async {final accountCreated = await Navigator.of(context).push<bool>(
-                      MaterialPageRoute(
-                        builder: (_) => const RegisterScreen(),
-                        ),
-                        );
-                        
-                        if (!mounted || accountCreated != true) return;
-                        
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Cuenta creada correctamente. Ahora iniciá sesión.',
+                    onPressed: _isLoading
+                        ? null
+                        : () async {
+                            final accountCreated = await Navigator.of(context)
+                                .push<bool>(
+                                  MaterialPageRoute(
+                                    builder: (_) => const RegisterScreen(),
+                                  ),
+                                );
+
+                            if (!mounted || accountCreated != true) return;
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Cuenta creada correctamente. Ahora iniciá sesión.',
+                                ),
                               ),
-                              ),
-                              );
-                              },
+                            );
+                          },
                     child: RichText(
                       text: TextSpan(
                         style: TextStyle(color: Colors.grey[600], fontSize: 14),
