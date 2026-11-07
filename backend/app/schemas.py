@@ -76,3 +76,15 @@ class UserUpdate(BaseModel):
     apellido: str
     fecha_nacimiento: date
     dni: str
+
+class CanchaListaResponse(BaseModel):
+    id: int
+    nombre: str
+    deporte: str
+    tipo: str | None
+    precio_por_hora: float
+    sede_id: int
+    sede_nombre: str
+    sede_direccion: str
+    hora_apertura: time
+    hora_cierre: time
