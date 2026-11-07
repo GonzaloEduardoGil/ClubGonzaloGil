@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../models/cancha.dart';
 import '../models/sede.dart';
+import '../models/slot.dart';
+import '../services/api_client.dart';
 import '../theme/app_colors.dart';
 
 class BookingScreen extends StatefulWidget {
-  const BookingScreen({super.key, required this.cancha, required this.sede});
+  const BookingScreen({
+    super.key,
+    required this.cancha,
+    required this.sede,
+  });
 
   final Cancha cancha;
   final Sede sede;
@@ -17,9 +23,12 @@ class BookingScreen extends StatefulWidget {
 class _BookingScreenState extends State<BookingScreen> {
   late final List<DateTime> _dias;
   late DateTime _fechaSeleccionada;
+  late Future<List<Slot>> _slotsFuture;
 
   int? _horaInicio;
   int? _horaFin;
+  bool _guardando = false;
+  String? _error;
 
   @override
   void initState() {
@@ -33,16 +42,23 @@ class _BookingScreenState extends State<BookingScreen> {
         hoy.add(Duration(days: indice)),
     ];
 
-    _fechaSeleccionada = _dias.first;
+    _seleccionarDia(_dias.first);
   }
 
-  List<int> get _horariosDisponibles {
-    // Más adelante estos horarios los traerá la API.
-    // Por ahora respetan el horario de cada sede.
-    final apertura = int.parse(widget.sede.horaApertura.split(':').first);
-    final cierre = int.parse(widget.sede.horaCierre.split(':').first);
+  void _seleccionarDia(DateTime fecha) {
+    _fechaSeleccionada = fecha;
+    _horaInicio = null;
+    _horaFin = null;
+    _error = null;
 
-    return [for (int hora = apertura; hora < cierre; hora++) hora];
+    _slotsFuture = ApiClient.obtenerDisponibilidad(
+      canchaId: widget.cancha.id,
+      fecha: fecha,
+    );
+  }
+
+  int _horaNumerica(Slot slot) {
+    return int.parse(slot.hora.split(':').first);
   }
 
   String _formatearHora(int hora) {
@@ -58,68 +74,82 @@ class _BookingScreenState extends State<BookingScreen> {
 
   String _diaSemana(DateTime fecha) {
     const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+
     return dias[fecha.weekday - 1];
   }
 
-  void _seleccionarHorario(int hora) {
-    setState(() {
-      // Primer toque: selecciona una hora de inicio.
-      if (_horaInicio == null) {
-        _horaInicio = hora;
-        _horaFin = hora + 1;
-        return;
-      }
+  void _seleccionarHorario(List<Slot> slots, Slot slot) {
+    final hora = _horaNumerica(slot);
 
-      // Tocar el mismo horario lo deselecciona.
-      if (_horaInicio == hora && _horaFin == hora + 1) {
-        _horaInicio = null;
-        _horaFin = null;
-        return;
-      }
-
-      // Si se toca un horario posterior, amplía la reserva.
-      if (hora >= _horaFin!) {
-        _horaFin = hora + 1;
-        return;
-      }
-
-      // Si se toca uno anterior, empieza una selección nueva.
+    if (_horaInicio == null) {
       _horaInicio = hora;
       _horaFin = hora + 1;
-    });
+      return;
+    }
+
+    if (_horaInicio == hora && _horaFin == hora + 1) {
+      _horaInicio = null;
+      _horaFin = null;
+      return;
+    }
+
+    if (hora >= _horaFin!) {
+      final todosDisponibles = slots
+          .where(
+            (slotActual) =>
+                _horaNumerica(slotActual) >= _horaInicio! &&
+                _horaNumerica(slotActual) <= hora,
+          )
+          .every((slotActual) => slotActual.disponible);
+
+      if (todosDisponibles) {
+        _horaFin = hora + 1;
+        return;
+      }
+    }
+
+    _horaInicio = hora;
+    _horaFin = hora + 1;
   }
 
-  void _confirmarReserva() {
+  Future<void> _confirmarReserva() async {
     if (_horaInicio == null || _horaFin == null) return;
 
-    final cantidadHoras = _horaFin! - _horaInicio!;
-    final total = widget.cancha.precioPorHora * cantidadHoras;
+    setState(() {
+      _guardando = true;
+      _error = null;
+    });
 
-    showDialog<void>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Reserva confirmada'),
-          content: Text(
-            '${widget.cancha.nombre}\n'
-            '${widget.sede.nombre}\n'
-            '${_formatearFecha(_fechaSeleccionada)}\n'
-            '${_formatearHora(_horaInicio!)} a '
-            '${_formatearHora(_horaFin!)}\n\n'
-            'Total: \$$total',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Aceptar'),
-            ),
-          ],
-        );
-      },
-    );
+    try {
+      await ApiClient.crearReserva(
+        canchaId: widget.cancha.id,
+        fecha: _fechaSeleccionada,
+        horaInicio: _formatearHora(_horaInicio!),
+        horaFin: _formatearHora(_horaFin!),
+      );
+
+      if (!mounted) return;
+
+      final mensaje =
+          'Reserva confirmada para ${_formatearFecha(_fechaSeleccionada)} '
+          'de ${_formatearHora(_horaInicio!)} '
+          'a ${_formatearHora(_horaFin!)}.';
+
+      final messenger = ScaffoldMessenger.of(context);
+
+      Navigator.of(context).pop();
+
+      messenger.showSnackBar(
+        SnackBar(content: Text(mensaje)),
+      );
+    } catch (error) {
+      if (!mounted) return;
+
+      setState(() {
+        _guardando = false;
+        _error = error.toString().replaceFirst('Exception: ', '');
+      });
+    }
   }
 
   @override
@@ -154,7 +184,10 @@ class _BookingScreenState extends State<BookingScreen> {
             const SizedBox(height: 24),
             const Text(
               'Elegí una fecha',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
             const SizedBox(height: 10),
             SizedBox(
@@ -168,13 +201,13 @@ class _BookingScreenState extends State<BookingScreen> {
                   final seleccionada = fecha == _fechaSeleccionada;
 
                   return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _fechaSeleccionada = fecha;
-                        _horaInicio = null;
-                        _horaFin = null;
-                      });
-                    },
+                    onTap: _guardando
+                        ? null
+                        : () {
+                            setState(() {
+                              _seleccionarDia(fecha);
+                            });
+                          },
                     child: Container(
                       width: 54,
                       decoration: BoxDecoration(
@@ -205,33 +238,87 @@ class _BookingScreenState extends State<BookingScreen> {
             const SizedBox(height: 24),
             const Text(
               'Elegí horario',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
-              'Tocá una hora de inicio. Podés tocar otra posterior para reservar más tiempo.',
+              'Tocá una hora de inicio. Luego podés elegir otra posterior '
+              'para reservar más tiempo.',
               style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
             const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final hora in _horariosDisponibles)
-                  ChoiceChip(
-                    label: Text(_formatearHora(hora)),
-                    selected:
-                        _horaInicio != null &&
-                        hora >= _horaInicio! &&
-                        hora < _horaFin!,
-                    selectedColor: AppColors.indigo[400],
-                    backgroundColor: AppColors.surface,
-                    side: BorderSide(color: Colors.grey[700]!),
-                    onSelected: (_) => _seleccionarHorario(hora),
-                  ),
-              ],
+            FutureBuilder<List<Slot>>(
+              future: _slotsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        setState(() {
+                          _seleccionarDia(_fechaSeleccionada);
+                        });
+                      },
+                      child: const Text('Reintentar'),
+                    ),
+                  );
+                }
+
+                final slots = snapshot.data ?? [];
+                final hayDisponibles = slots.any(
+                  (slot) => slot.disponible,
+                );
+
+                if (!hayDisponibles) {
+                  return Text(
+                    'No hay horarios disponibles para esta fecha.',
+                    style: TextStyle(color: Colors.grey[600]),
+                  );
+                }
+
+                return Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final slot in slots)
+                      ChoiceChip(
+                        label: Text(slot.hora),
+                        selected: _horaInicio != null &&
+                            _horaNumerica(slot) >= _horaInicio! &&
+                            _horaNumerica(slot) < _horaFin!,
+                        selectedColor: AppColors.indigo[400],
+                        backgroundColor: AppColors.surface,
+                        side: BorderSide(color: Colors.grey[700]!),
+                        onSelected: slot.disponible && !_guardando
+                            ? (_) {
+                                setState(() {
+                                  _seleccionarHorario(slots, slot);
+                                });
+                              }
+                            : null,
+                      ),
+                  ],
+                );
+              },
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
+            if (_error != null) ...[
+              Text(
+                _error!,
+                style: const TextStyle(color: Colors.redAccent),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+            ],
             SizedBox(
               height: 52,
               child: FilledButton(
@@ -239,14 +326,25 @@ class _BookingScreenState extends State<BookingScreen> {
                   backgroundColor: AppColors.indigo[400],
                   foregroundColor: Colors.black,
                 ),
-                onPressed: _horaInicio == null ? null : _confirmarReserva,
-                child: Text(
-                  _horaInicio == null
-                      ? 'Elegí un horario'
-                      : 'Reservar '
-                            '${_formatearHora(_horaInicio!)} - '
-                            '${_formatearHora(_horaFin!)} · \$$total',
-                ),
+                onPressed: _horaInicio == null || _guardando
+                    ? null
+                    : _confirmarReserva,
+                child: _guardando
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.black,
+                        ),
+                      )
+                    : Text(
+                        _horaInicio == null
+                            ? 'Elegí un horario'
+                            : 'Reservar '
+                                '${_formatearHora(_horaInicio!)} - '
+                                '${_formatearHora(_horaFin!)} · \$$total',
+                      ),
               ),
             ),
           ],

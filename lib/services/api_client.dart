@@ -8,6 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/user_profile.dart';
 
+import '../models/slot.dart';
+
 class ApiClient {
   static Future<void> crearPerfil({
   required String nombre,
@@ -105,5 +107,78 @@ static Future<UserProfile> obtenerMiPerfil() async {
   final datos = jsonDecode(response.body) as Map<String, dynamic>;
 
   return UserProfile.fromJson(datos);
+}
+static Future<List<Slot>> obtenerDisponibilidad({
+  required int canchaId,
+  required DateTime fecha,
+}) async {
+  final uri = Uri.parse(
+    '$_baseUrl/canchas/$canchaId/disponibilidad',
+  ).replace(
+    queryParameters: {
+      'fecha': _fechaParaApi(fecha),
+    },
+  );
+
+  final response = await http.get(uri);
+
+  if (response.statusCode != 200) {
+    throw Exception('No se pudo consultar la disponibilidad.');
+  }
+
+  final datos = jsonDecode(response.body) as List<dynamic>;
+
+  return datos
+      .map((dato) => Slot.fromJson(dato as Map<String, dynamic>))
+      .toList();
+}
+
+static Future<void> crearReserva({
+  required int canchaId,
+  required DateTime fecha,
+  required String horaInicio,
+  required String horaFin,
+}) async {
+  final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+
+  if (token == null) {
+    throw Exception('No hay un usuario autenticado.');
+  }
+
+  final response = await http.post(
+    Uri.parse('$_baseUrl/reservas'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode({
+      'cancha_id': canchaId,
+      'fecha': _fechaParaApi(fecha),
+      'hora_inicio': horaInicio,
+      'hora_fin': horaFin,
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    return;
+  }
+
+  String mensaje = 'No se pudo crear la reserva.';
+
+  try {
+    final datos = jsonDecode(response.body) as Map<String, dynamic>;
+    mensaje = datos['detail'] as String? ?? mensaje;
+  } catch (_) {
+    // Conserva el mensaje general si la respuesta no contiene JSON válido.
+  }
+
+  throw Exception(mensaje);
+}
+
+static String _fechaParaApi(DateTime fecha) {
+  final mes = fecha.month.toString().padLeft(2, '0');
+  final dia = fecha.day.toString().padLeft(2, '0');
+
+  return '${fecha.year}-$mes-$dia';
 }
 }
