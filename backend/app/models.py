@@ -60,9 +60,18 @@ class Reserva(Base):
     hora_inicio: Mapped[time] = mapped_column(Time)
     hora_fin: Mapped[time] = mapped_column(Time)
     estado: Mapped[str] = mapped_column(String(20), default="confirmada")
+    
     creada_en: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
+    )
+    reminder_24h_sent_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    reminder_1h_sent_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
     )
 
     usuario: Mapped["User"] = relationship(back_populates="reservas")

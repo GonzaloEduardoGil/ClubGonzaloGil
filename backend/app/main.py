@@ -1,7 +1,8 @@
+import asyncio
 from .routers.sedes import router as sedes_router
 from .seed import cargar_datos_iniciales
 
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI
 
@@ -12,6 +13,7 @@ from .routers.users import router as users_router
 from .routers.reservas import router as reservas_router
 from .routers.canchas import router as canchas_router
 from .routers.device_tokens import router as device_tokens_router
+from .notifier import ejecutar_recordatorios
 
 
 @asynccontextmanager
@@ -22,9 +24,16 @@ async def lifespan(app: FastAPI):
     with SessionLocal() as db:
         cargar_datos_iniciales(db)
 
+    tarea_recordatorios = asyncio.create_task(
+        ejecutar_recordatorios(),
+    )
+
     yield
 
+    tarea_recordatorios.cancel()
 
+    with suppress(asyncio.CancelledError):
+        await tarea_recordatorios
 app = FastAPI(
     title="Club Gonzalo Gil API",
     description="API para la gestión de sedes, canchas y reservas deportivas.",
