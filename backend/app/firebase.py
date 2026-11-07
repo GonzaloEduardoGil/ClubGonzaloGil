@@ -1,5 +1,5 @@
 import firebase_admin
-from firebase_admin import auth
+from firebase_admin import auth, messaging
 
 
 def initialize_firebase() -> None:
@@ -16,3 +16,21 @@ def verify_firebase_token(id_token: str) -> str:
     decoded_token = auth.verify_id_token(id_token)
 
     return decoded_token["uid"]
+
+def enviar_notificacion(
+    tokens: list[str],
+    titulo: str,
+    cuerpo: str,
+) -> None:
+    if not tokens:
+        return
+
+    mensaje = messaging.MulticastMessage(
+        notification=messaging.Notification(
+            title=titulo,
+            body=cuerpo,
+        ),
+        tokens=tokens,
+    )
+
+    messaging.send_each_for_multicast(mensaje)

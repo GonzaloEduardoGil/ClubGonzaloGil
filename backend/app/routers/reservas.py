@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session, joinedload
 
 from ..db import SessionLocal
 from ..deps import get_firebase_uid
-from ..models import Cancha, Reserva, User
+from ..firebase import enviar_notificacion
+from ..models import Cancha, DeviceToken, Reserva, User
 from ..schemas import (
     ReservaCreate,
     ReservaDetalleResponse,
@@ -189,6 +190,29 @@ def crear_reserva(
     db.add(reserva)
     db.commit()
     db.refresh(reserva)
+
+    tokens = list(
+        db.scalars(
+            select(DeviceToken.token).where(
+                DeviceToken.usuario_id == usuario.id,
+            ),
+        ),
+    )
+
+    try:
+        enviar_notificacion(
+            tokens,
+            "Reserva confirmada",
+            (
+                f"{cancha.nombre} en {cancha.sede.nombre}. "
+                f"{datos.fecha:%d/%m/%Y} de "
+                f"{datos.hora_inicio:%H:%M} a "
+                f"{datos.hora_fin:%H:%M}."
+            ),
+        )
+    except Exception:
+        # Una falla de notificación no debe cancelar una reserva válida.
+        pass
 
     return reserva
 @router.get(
