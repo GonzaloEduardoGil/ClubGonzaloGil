@@ -11,6 +11,7 @@ from .firebase import initialize_firebase
 from .routers.users import router as users_router
 from .routers.reservas import router as reservas_router
 from .routers.canchas import router as canchas_router
+from .routers.device_tokens import router as device_tokens_router
 
 
 @asynccontextmanager
@@ -39,3 +40,4 @@ app.include_router(sedes_router)
 app.include_router(users_router)
 app.include_router(reservas_router)
 app.include_router(canchas_router)
+app.include_router(device_tokens_router)

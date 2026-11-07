@@ -6,6 +6,7 @@ import '../models/user_profile.dart';
 import 'profile_screen.dart';
 import 'reservas_screen.dart';
 import 'canchas_screen.dart';
+import '../services/push_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.usuario});
@@ -31,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _usuario = widget.usuario;
+    PushService.inicializar();
   }
 
   void _actualizarPerfil(UserProfile usuarioActualizado) {

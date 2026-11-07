@@ -88,3 +88,6 @@ class CanchaListaResponse(BaseModel):
     sede_direccion: str
     hora_apertura: time
     hora_cierre: time
+
+class DeviceTokenCreate(BaseModel):
+    token: str

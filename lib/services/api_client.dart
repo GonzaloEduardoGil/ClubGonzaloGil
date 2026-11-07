@@ -372,4 +372,28 @@ class ApiClient {
 
     throw ApiException(_mensajeDeRespuesta(response, mensajePorDefecto));
   }
+static Future<void> registrarTokenDispositivo(String token) async {
+  final idToken = await FirebaseAuth.instance.currentUser?.getIdToken();
+
+  if (idToken == null) {
+    throw const ApiException('No hay un usuario autenticado.');
+  }
+
+  final response = await _ejecutar(
+    http.post(
+      Uri.parse('$_baseUrl/device-tokens'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $idToken',
+      },
+      body: jsonEncode({'token': token}),
+    ),
+  );
+
+  _verificarRespuesta(
+    response,
+    codigosCorrectos: [204],
+    mensajePorDefecto: 'No se pudo registrar el dispositivo.',
+  );
+}
 }

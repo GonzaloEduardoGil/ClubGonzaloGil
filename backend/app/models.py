@@ -67,3 +67,12 @@ class Reserva(Base):
 
     usuario: Mapped["User"] = relationship(back_populates="reservas")
     cancha: Mapped["Cancha"] = relationship(back_populates="reservas")
+
+class DeviceToken(Base):
+    __tablename__ = "device_tokens"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    usuario_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+    )
+    token: Mapped[str] = mapped_column(String(512), unique=True)
