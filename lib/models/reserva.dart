@@ -29,14 +29,30 @@ class Reserva {
     );
   }
   String get canchaMostrada {
-    return cancha
-        .replaceAll('_', ' ')
-        .split(' ')
-        .map((parte) {
-          if (parte.isEmpty) return parte;
-          return '${parte[0].toUpperCase()}${parte.substring(1)}';
-        })
-        .join(' ');
+    final partes = cancha.replaceAll('_', ' ').trim().split(RegExp(r'\s+'));
+
+    if (partes.length < 2) {
+      return cancha;
+    }
+
+    final deporteCrudo = partes[partes.length - 2].toLowerCase();
+    final numero = partes.last;
+
+    String deporte;
+
+    if (deporteCrudo == 'futbol') {
+      deporte = 'Fútbol';
+    } else if (deporteCrudo == 'tenis') {
+      deporte = 'Tenis';
+    } else if (deporteCrudo == 'hockey') {
+      deporte = 'Hockey';
+    } else if (deporteCrudo == 'golf') {
+      deporte = 'Golf';
+    } else {
+      deporte = '${deporteCrudo[0].toUpperCase()}${deporteCrudo.substring(1)}';
+    }
+
+    return 'Cancha de $deporte $numero';
   }
 
   String get fechaFormateada {

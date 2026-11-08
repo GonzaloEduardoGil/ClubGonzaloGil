@@ -16,14 +16,14 @@ class Cancha {
   final List<String> caracteristicas;
 
   String get nombreMostrado {
-    return nombre
-        .replaceAll('_', ' ')
-        .split(' ')
-        .map((parte) {
-          if (parte.isEmpty) return parte;
-          return '${parte[0].toUpperCase()}${parte.substring(1)}';
-        })
-        .join(' ');
+    final coincidencia = RegExp(r'(\d+)\s*$').firstMatch(nombre);
+    final numero = coincidencia?.group(1);
+
+    if (numero == null) {
+      return 'Cancha de $deporte';
+    }
+
+    return 'Cancha de $deporte $numero';
   }
 
   factory Cancha.fromJson(Map<String, dynamic> json) {
