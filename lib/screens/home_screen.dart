@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      _HomeContent(nombre: _usuario.nombre),
+      _HomeContent(nombre: _usuario.nombre, onReservar: () => _goToTab(2)),
       const SedesScreen(),
       const CanchasScreen(),
       const ReservasScreen(),
@@ -92,9 +92,9 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _HomeContent extends StatelessWidget {
-  const _HomeContent({required this.nombre});
-
+  const _HomeContent({required this.nombre, required this.onReservar});
   final String nombre;
+  final VoidCallback onReservar;
 
   @override
   Widget build(BuildContext context) {
@@ -241,6 +241,31 @@ class _HomeContent extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: onReservar,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.indigo[400],
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      icon: const Icon(Icons.sports_soccer),
+                      label: const Text(
+                        'RESERVAR UNA CANCHA',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                     ),
                   ),
                 ),
