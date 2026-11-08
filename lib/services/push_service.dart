@@ -29,14 +29,13 @@ class PushService {
     );
 
     await _localNotifications.initialize(
-      const InitializationSettings(
-        android: configuracionAndroid,
-        ),
-        );
+      const InitializationSettings(android: configuracionAndroid),
+    );
 
     final android = _localNotifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+          AndroidFlutterLocalNotificationsPlugin
+        >();
 
     await android?.createNotificationChannel(_channel);
 
@@ -52,15 +51,15 @@ class PushService {
       await ApiClient.registrarTokenDispositivo(token);
     }
 
-    _tokenRefreshSubscription ??= _messaging.onTokenRefresh.listen(
-      (nuevoToken) async {
-        try {
-          await ApiClient.registrarTokenDispositivo(nuevoToken);
-        } catch (_) {
-          // No interrumpe la app si falla el registro del token.
-        }
-      },
-    );
+    _tokenRefreshSubscription ??= _messaging.onTokenRefresh.listen((
+      nuevoToken,
+    ) async {
+      try {
+        await ApiClient.registrarTokenDispositivo(nuevoToken);
+      } catch (_) {
+        // No interrumpe la app si falla el registro del token.
+      }
+    });
 
     _foregroundSubscription ??= FirebaseMessaging.onMessage.listen(
       _mostrarNotificacionEnPrimerPlano,
@@ -75,18 +74,18 @@ class PushService {
     if (notificacion == null) return;
 
     await _localNotifications.show(
-  DateTime.now().millisecondsSinceEpoch.remainder(100000),
-  notificacion.title ?? 'Club Gonzalo Gil',
-  notificacion.body ?? '',
-  const NotificationDetails(
-    android: AndroidNotificationDetails(
-      'reservas',
-      'Reservas',
-      channelDescription: 'Confirmaciones y recordatorios de reservas.',
-      importance: Importance.high,
-      priority: Priority.high,
-    ),
-  ),
-);
+      DateTime.now().millisecondsSinceEpoch.remainder(100000),
+      notificacion.title ?? 'Club Gonzalo Gil',
+      notificacion.body ?? '',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'reservas',
+          'Reservas',
+          channelDescription: 'Confirmaciones y recordatorios de reservas.',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+      ),
+    );
   }
 }

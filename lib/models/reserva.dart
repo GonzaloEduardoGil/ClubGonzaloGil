@@ -28,6 +28,16 @@ class Reserva {
       estado: json['estado'] as String,
     );
   }
+  String get canchaMostrada {
+    return cancha
+        .replaceAll('_', ' ')
+        .split(' ')
+        .map((parte) {
+          if (parte.isEmpty) return parte;
+          return '${parte[0].toUpperCase()}${parte.substring(1)}';
+        })
+        .join(' ');
+  }
 
   String get fechaFormateada {
     final partes = fecha.split('-');

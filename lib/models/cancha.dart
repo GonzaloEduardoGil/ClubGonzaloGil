@@ -15,6 +15,17 @@ class Cancha {
   final int precioPorHora;
   final List<String> caracteristicas;
 
+  String get nombreMostrado {
+    return nombre
+        .replaceAll('_', ' ')
+        .split(' ')
+        .map((parte) {
+          if (parte.isEmpty) return parte;
+          return '${parte[0].toUpperCase()}${parte.substring(1)}';
+        })
+        .join(' ');
+  }
+
   factory Cancha.fromJson(Map<String, dynamic> json) {
     return Cancha(
       id: json['id'] as int,

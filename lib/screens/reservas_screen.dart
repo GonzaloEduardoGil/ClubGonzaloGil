@@ -33,7 +33,9 @@ class _ReservasScreenState extends State<ReservasScreen> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Cancelar reserva'),
-          content: Text('¿Querés cancelar la reserva de ${reserva.cancha}?'),
+          content: Text(
+            '¿Querés cancelar la reserva de ${reserva.canchaMostrada}?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -208,7 +210,7 @@ class _ReservaCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    reserva.cancha,
+                    reserva.canchaMostrada,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

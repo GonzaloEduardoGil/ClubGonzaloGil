@@ -69,6 +69,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/app_icon.png
+    - assets/images/
 flutter_launcher_icons:
   android: true
   ios: false
