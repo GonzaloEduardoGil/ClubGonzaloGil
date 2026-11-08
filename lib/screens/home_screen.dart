@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _usuario = usuarioActualizado;
     });
   }
-
+  @override
   Widget build(BuildContext context) {
     final pages = [
       _HomeContent(nombre: _usuario.nombre),
@@ -206,34 +206,6 @@ class _HomeContent extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PlaceholderTab extends StatelessWidget {
-  const _PlaceholderTab({required this.title, required this.message});
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.construction, size: 52, color: AppColors.indigo[700]),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(message),
           ],
         ),
       ),

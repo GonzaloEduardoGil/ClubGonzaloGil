@@ -283,7 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 );
 
-                            if (!mounted || accountCreated != true) return;
+                            if (!context.mounted || accountCreated != true) return;
 
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
