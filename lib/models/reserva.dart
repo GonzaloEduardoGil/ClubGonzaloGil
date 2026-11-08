@@ -51,11 +51,31 @@ class Reserva {
     return '${horaInicio.substring(0, 5)} - ${horaFin.substring(0, 5)}';
   }
 
+  DateTime get iniciaEn {
+    return DateTime.parse('$fecha $horaInicio');
+  }
+
+  DateTime get finalizaEn {
+    return DateTime.parse('$fecha $horaFin');
+  }
+
+  String get estadoMostrado {
+    if (estado == 'cancelada') return 'Cancelada';
+
+    final ahora = DateTime.now();
+
+    if (!finalizaEn.isAfter(ahora)) {
+      return 'Terminada';
+    }
+
+    if (!iniciaEn.isAfter(ahora)) {
+      return 'En proceso';
+    }
+
+    return 'Confirmada';
+  }
+
   bool get esProxima {
-    if (estado != 'confirmada') return false;
-
-    final finalizaEn = DateTime.parse('$fecha $horaFin');
-
-    return finalizaEn.isAfter(DateTime.now());
+    return estado == 'confirmada' && finalizaEn.isAfter(DateTime.now());
   }
 }

@@ -198,6 +198,8 @@ class _ReservaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cancelada = reserva.estado == 'cancelada';
+    final enProceso = reserva.estadoMostrado == 'En proceso';
+    final terminada = reserva.estadoMostrado == 'Terminada';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 14),
@@ -225,13 +227,23 @@ class _ReservaCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: cancelada
                         ? Colors.red.shade100
+                        : enProceso
+                        ? Colors.orange.shade100
+                        : terminada
+                        ? Colors.blueGrey.shade100
                         : AppColors.indigo[100],
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    reserva.estado.toUpperCase(),
+                    reserva.estadoMostrado.toUpperCase(),
                     style: TextStyle(
-                      color: cancelada ? Colors.red.shade900 : Colors.black,
+                      color: cancelada
+                          ? Colors.red.shade900
+                          : enProceso
+                          ? Colors.orange.shade900
+                          : terminada
+                          ? Colors.blueGrey.shade900
+                          : Colors.black,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
