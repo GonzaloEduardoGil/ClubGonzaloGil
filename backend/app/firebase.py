@@ -26,12 +26,10 @@ def initialize_firebase() -> None:
         firebase_admin.initialize_app()
 
 
-def verify_firebase_token(id_token: str) -> str:
+def verify_firebase_token(id_token: str) -> dict:
     initialize_firebase()
 
-    decoded_token = auth.verify_id_token(id_token)
-
-    return decoded_token["uid"]
+    return auth.verify_id_token(id_token)
 
 
 def enviar_notificacion(

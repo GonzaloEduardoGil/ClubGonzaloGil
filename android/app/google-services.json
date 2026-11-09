@@ -12,7 +12,20 @@
           "package_name": "com.gonzaloeduardogil.club_gonzalo_gil"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1032729756621-10gggv1vbrvujhq7d7pirhqpbrohsl1h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gonzaloeduardogil.club_gonzalo_gil",
+            "certificate_hash": "14766f9e2939f89ce3d100e5e825e350295cef91"
+          }
+        },
+        {
+          "client_id": "1032729756621-35s9blk0o4rkcki7cusljik23nog0fpm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD42qBZSdUj6X216RZgdVaYeF59aTpGFgI"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1032729756621-35s9blk0o4rkcki7cusljik23nog0fpm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

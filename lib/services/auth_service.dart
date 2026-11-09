@@ -2,10 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'api_client.dart';
 
+import 'package:google_sign_in/google_sign_in.dart';
+
 class AuthService {
   AuthService._();
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
+  static Future<void>? _googleInitialization;
 
   static Future<String?> iniciarSesion({
     required String email,
@@ -47,10 +50,42 @@ class AuthService {
       return null;
     } on FirebaseAuthException catch (error) {
       return _mensajeDeError(error);
-    } catch (_) {
+    } catch (error) {
       await _auth.signOut();
+      if (error is ApiException) {
+        return error.message;
+  }
+  
+  return 'La cuenta se creó, pero no se pudo guardar el perfil.';
+  }
+  }
 
-      return 'La cuenta se creó, pero no se pudo guardar el perfil.';
+  static Future<String?> iniciarSesionConGoogle() async {
+    try {
+      await (_googleInitialization ??= GoogleSignIn.instance.initialize());
+
+      final cuentaGoogle = await GoogleSignIn.instance.authenticate();
+      final autenticacionGoogle = cuentaGoogle.authentication;
+
+      if (autenticacionGoogle.idToken == null) {
+        return 'No se pudo obtener la credencial de Google.';
+      }
+
+      final credencial = GoogleAuthProvider.credential(
+        idToken: autenticacionGoogle.idToken,
+      );
+
+      await _auth.signInWithCredential(credencial);
+
+      return null;
+    } on GoogleSignInException catch (error) {
+      if (error.code == GoogleSignInExceptionCode.canceled) {
+        return 'Cancelaste el inicio de sesión con Google.';
+      }
+
+      return 'No se pudo iniciar sesión con Google.';
+    } on FirebaseAuthException catch (error) {
+      return _mensajeDeError(error);
     }
   }
 

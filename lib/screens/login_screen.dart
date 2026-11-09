@@ -96,6 +96,44 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _submitGoogle() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final error = await AuthService.iniciarSesionConGoogle();
+
+    if (!mounted) return;
+
+    if (error != null) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = error;
+      });
+      return;
+    }
+
+    try {
+      final perfil = await ApiClient.obtenerMiPerfil();
+
+      if (!mounted) return;
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => HomeScreen(usuario: perfil)),
+        (route) => false,
+      );
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _errorMessage =
+            'Esta cuenta de Google todavía no tiene un perfil completo.';
+      });
+    }
+  }
+
   InputDecoration _fieldDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
@@ -261,13 +299,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Próximamente: acceso con Google.'),
-                          ),
-                        );
-                      },
+                      onPressed: _isLoading ? null : _submitGoogle,
                     ),
                   ),
                   const SizedBox(height: 16),
