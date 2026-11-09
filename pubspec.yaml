@@ -70,6 +70,7 @@ flutter:
   assets:
     - assets/app_icon.png
     - assets/images/
+    - assets/images/sedes/
 flutter_launcher_icons:
   android: true
   ios: false

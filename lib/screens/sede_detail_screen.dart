@@ -6,6 +6,21 @@ import '../services/api_client.dart';
 import '../theme/app_colors.dart';
 import 'booking_screen.dart';
 
+String _imagenParaSede(String nombre) {
+  switch (nombre) {
+    case 'Sede Norte':
+      return 'assets/images/sedes/sede_norte.jpg';
+    case 'Sede Centro':
+      return 'assets/images/sedes/sede_centro.jpg';
+    case 'Sede Sur':
+      return 'assets/images/sedes/sede_sur.jpg';
+    case 'Sede Este':
+      return 'assets/images/sedes/sede_este.jpg';
+    default:
+      return 'assets/images/sedes/sede_norte.jpg';
+  }
+}
+
 class SedeDetailScreen extends StatefulWidget {
   const SedeDetailScreen({super.key, required this.sede});
 
@@ -78,44 +93,53 @@ class _SedeDetailScreenState extends State<SedeDetailScreen> {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(12, 16, 20, 24),
-              color: AppColors.indigo[400],
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'SEDE',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
+              height: 230,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(_imagenParaSede(sede.nombre)),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(12, 16, 20, 24),
+                color: const Color.fromRGBO(0, 0, 0, 0.42),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    sede.nombre.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 26,
-                      fontWeight: FontWeight.w900,
+                    const Spacer(),
+                    const Text(
+                      'SEDE',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    sede.direccion,
-                    style: const TextStyle(color: Colors.black87),
-                  ),
-                  Text(
-                    'Abierto de ${sede.horario}',
-                    style: const TextStyle(color: Colors.black87),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      sede.nombre.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      sede.direccion,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    Text(
+                      'Abierto de ${sede.horario}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
             ),
             Expanded(
