@@ -3,10 +3,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import SessionLocal
-from ..deps import get_firebase_claims
+from ..deps import get_firebase_uid
 from ..models import User
 from ..schemas import UserCreate, UserResponse, UserUpdate
-
 
 router = APIRouter(prefix="/users", tags=["Usuarios"])
 
@@ -58,37 +57,10 @@ def crear_o_consultar_perfil(
 
     return usuario
 @router.get("/me", response_model=UserResponse)
-@router.get("/me", response_model=UserResponse)
 def obtener_mi_perfil(
-    firebase_claims: dict = Depends(get_firebase_claims),
+    firebase_uid: str = Depends(get_firebase_uid),
     db: Session = Depends(get_db),
 ):
-    firebase_uid = firebase_claims["uid"]
-    email = firebase_claims.get("email")
-
-    usuario = db.scalar(
-        select(User).where(User.firebase_uid == firebase_uid),
-    )
-
-    # Recupera el perfil si Firebase fue eliminado y creado otra vez
-    # con el mismo correo electrónico.
-    if usuario is None and email is not None:
-        usuario = db.scalar(
-            select(User).where(User.email == email),
-        )
-
-        if usuario is not None:
-            usuario.firebase_uid = firebase_uid
-            db.commit()
-            db.refresh(usuario)
-
-    if usuario is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Perfil no encontrado.",
-        )
-
-    return usuario
     usuario = db.scalar(
         select(User).where(User.firebase_uid == firebase_uid),
     )
