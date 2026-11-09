@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import SessionLocal
-from ..deps import get_firebase_claims, get_firebase_uid
+from ..deps import get_firebase_claims
 from ..models import User
 from ..schemas import UserCreate, UserResponse, UserUpdate
+
 
 router = APIRouter(prefix="/users", tags=["Usuarios"])
 
@@ -56,8 +57,7 @@ def crear_o_consultar_perfil(
     db.refresh(usuario)
 
     return usuario
-
-
+@router.get("/me", response_model=UserResponse)
 @router.get("/me", response_model=UserResponse)
 def obtener_mi_perfil(
     firebase_claims: dict = Depends(get_firebase_claims),
@@ -70,13 +70,11 @@ def obtener_mi_perfil(
         select(User).where(User.firebase_uid == firebase_uid),
     )
 
-    # Recupera el mismo perfil si Firebase se eliminó y se creó de nuevo
-    # utilizando el mismo correo.
+    # Recupera el perfil si Firebase fue eliminado y creado otra vez
+    # con el mismo correo electrónico.
     if usuario is None and email is not None:
-        email_normalizado = email.strip().lower()
-
         usuario = db.scalar(
-            select(User).where(func.lower(User.email) == email_normalizado),
+            select(User).where(User.email == email),
         )
 
         if usuario is not None:
@@ -91,8 +89,17 @@ def obtener_mi_perfil(
         )
 
     return usuario
+    usuario = db.scalar(
+        select(User).where(User.firebase_uid == firebase_uid),
+    )
 
+    if usuario is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Perfil no encontrado.",
+        )
 
+    return usuario
 @router.patch("/me", response_model=UserResponse)
 def editar_mi_perfil(
     datos: UserUpdate,

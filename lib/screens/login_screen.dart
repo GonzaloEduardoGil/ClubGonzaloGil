@@ -86,16 +86,14 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (_) => HomeScreen(usuario: perfil)),
         (route) => false,
       );
-    } catch (error) {
-  if (!mounted) return;
+    } catch (_) {
+      if (!mounted) return;
 
-  setState(() {
-    _isLoading = false;
-    _errorMessage = error is ApiException
-        ? error.message
-        : 'No se pudo cargar tu perfil.';
-  });
-}
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'No se pudo cargar tu perfil.';
+      });
+    }
   }
 
   Future<void> _submitGoogle() async {
