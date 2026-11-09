@@ -21,6 +21,7 @@ class WelcomeScreen extends StatelessWidget {
                   Container(
                     width: 110,
                     height: 110,
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: AppColors.indigo[400],
                       borderRadius: BorderRadius.circular(10),
@@ -30,10 +31,17 @@ class WelcomeScreen extends StatelessWidget {
                           color: AppColors.indigo.withValues(alpha: 0.35),
                           blurRadius: 28,
                           spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                  ),
+                          ),
+                          ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.asset(
+                              'assets/app_icon.png',
+                              fit: BoxFit.contain,
+                              ),
+                              ),
+                              ),
                   const SizedBox(height: 28),
                   Text(
                     'CLUB DEPORTIVO',
