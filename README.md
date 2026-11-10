@@ -78,17 +78,17 @@ flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
 
 ## Estructura principal
 
-lib/
-  models/       Modelos usados por Flutter.
-  screens/      Pantallas de la aplicación.
-  services/     Conexión con API, Firebase y notificaciones.
-  theme/        Colores compartidos.
-backend/
-  app/
-    routers/    Endpoints de la API.
-    models.py   Modelos de PostgreSQL.
-    schemas.py  Validación de solicitudes y respuestas.
-    notifier.py Recordatorios automáticos.
+lib/ <br>
+   models/       Modelos usados por Flutter. <br>
+   screens/      Pantallas de la aplicación. <br>
+   services/     Conexión con API, Firebase y notificaciones. <br>
+   theme/        Colores compartidos. <br>
+backend/ <br>
+    app/ <br>
+      routers/    Endpoints de la API. <br>
+      models.py   Modelos de PostgreSQL. <br>
+      schemas.py  Validación de solicitudes y respuestas. <br>
+      notifier.py Recordatorios automáticos. <br>
 
 ## Seguridad
 ### Los secretos no se suben al repositorio:
